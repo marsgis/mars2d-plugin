@@ -1,0 +1,54 @@
+{
+	"name": "mars2d-plugin-esri",
+	"version": "3.0.5",
+	"description": "Mars2D平台插件,ArcGIS Server功能支持插件",
+	"main": "src/index.js",
+	"dependencies": {
+		"esri-leaflet": "^3.0.3",
+		"leaflet": "^1.7.1",
+		"mars2d": "^3.0.5"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.14.3",
+		"@babel/eslint-parser": "^7.14.3",
+		"@babel/plugin-proposal-class-properties": "^7.14.3",
+		"@babel/plugin-transform-runtime": "^7.14.3",
+		"@babel/preset-env": "^7.14.3",
+		"babel-eslint": "^10.1.0",
+		"babel-loader": "^8.2.2",
+		"eslint": "^7.26.0",
+		"eslint-config-prettier": "^7.2.0",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-prettier": "^3.3.1",
+		"eslint-plugin-promise": "^4.3.1",
+		"prettier": "^2.2.1",
+		"webpack": "^4.46.0",
+		"webpack-cli": "^3.3.12",
+		"javascript-obfuscator": "^2.18.1",
+		"webpack-obfuscator": "^2.6.0"
+	},
+	"scripts": {
+		"build": "webpack --env.prod  --env.min --progress --profile --colors --config ./scripts/webpack.config.js && webpack --env.prod --progress --profile --colors --config ./scripts/webpack.config.js --devtool source-map",
+		"build-src": "webpack --env.prod --progress --profile --colors --config ./scripts/webpack.config.js --devtool source-map",
+		"build-min": "webpack --env.prod  --env.min  --progress --profile --colors --config ./scripts/webpack.config.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/marsgis/mars2d.git"
+	},
+	"bugs": {
+		"url": "https://github.com/marsgis/mars2d/issues",
+		"email": "wh@marsgis.cn"
+	},
+	"keywords": [
+		"marsgis",
+		"mars2d",
+		"leaflet",
+		"gis",
+		"webgis"
+	],
+	"author": "火星科技",
+	"license": "Apache-2.0",
+	"homepage": "http://mars2d.cn"
+}
