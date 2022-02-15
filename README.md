@@ -20,9 +20,8 @@
   
   
 | 目录  |   说明  | 
-|  ----  | ----  |
-|[mars3d-plugin-supermap](./mars3d-plugin-supermap/README.md)	|超图服务插件| 
-|[mars3d-plugin-tdt](./mars3d-plugin-tdt/README.md)	|天地图三维地名和地形服务插件 | 
+|  ----  | ----  | 
+|[mars2d-plugin-esri](./mars2d-plugin-esri/README.md)	|ArcGIS Server功能支持插件 | 
 |[mars3d-plugin-widget](./mars3d-plugin-widget/README.md)	|原生js下的widget模块化插件|  
 
 
