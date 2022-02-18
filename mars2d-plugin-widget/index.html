@@ -64,13 +64,11 @@
   <!--业务代码-->
   <script type="text/javascript">
     //读取 config.json 配置文件
-    var configUrl = "https://cdn.jsdelivr.net/gh/marsgis/mars2d-es5-example/example/config/config.json";
+    var configUrl = "http://mars2d.cn/config/config.json";
 
-    mars2d.axios
-      .get(configUrl)
-      .then(function (response) {
-        //构建地图
-        initMap(response.data.mars2d);
+    mars2d.Util.fetchJson({ url: configUrl })
+      .then(function (data) {
+        initMap(data.mars2d);//构建地图
       })
       .catch(function (error) {
         console.log(error);

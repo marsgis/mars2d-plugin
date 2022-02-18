@@ -5,7 +5,7 @@
 	"main": "src/index.js",
 	"dependencies": {
 		"leaflet": "^1.7.1",
-		"mars2d": "^3.0.5"
+		"mars2d": "^3.0.6"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",
