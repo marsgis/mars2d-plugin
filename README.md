@@ -21,8 +21,7 @@
   
 | 目录  |   说明  | 
 |  ----  | ----  | 
-|[mars2d-plugin-esri](./mars2d-plugin-esri/README.md)	|ArcGIS Server功能支持插件 | 
-|[mars2d-plugin-widget](./mars2d-plugin-widget/README.md)	|原生js下的widget模块化插件|  
+|[mars2d-plugin-esri](./mars2d-plugin-esri/README.md)	|ArcGIS Server功能支持插件 |  
 
 
   
