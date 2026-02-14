@@ -1,12 +1,12 @@
 {
 	"name": "mars2d-plugin-esri",
-	"version": "3.0.5",
+  "version": "3.4.0",
 	"description": "Mars2D平台插件,ArcGIS Server功能支持插件",
 	"main": "src/index.js",
 	"dependencies": {
 		"esri-leaflet": "^3.0.3",
-		"leaflet": "^1.7.1",
-    "mars2d": "~3.2.0"
+    "leaflet": "~1.9.4",
+    "mars2d": "~3.4.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",

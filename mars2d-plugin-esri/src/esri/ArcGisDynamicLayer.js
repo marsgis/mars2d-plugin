@@ -1,19 +1,19 @@
-import L from "leaflet";
-import * as LEsri from "esri-leaflet";
-import * as mars2d from "mars2d";
+import L from "leaflet"
+import * as LEsri from "esri-leaflet"
+import * as mars2d from "mars2d"
 
 /**
  * @typedef {Object} ArcGisDynamicLayer.EventType
  * 当前类支持的{@link EventType}事件类型（包括自定义字符串事件名）
  *
  * @property {String} loading 当新功能开始加载时触发。
- * @property {String} load	 当地图当前边界中的所有要素都已加载时触发。
+ * @property {String} load 当地图当前边界中的所有要素都已加载时触发。
  *
- * @property {String} requeststart	 当对服务的请求开始时触发。
- * @property {String} requestend	 当对服务的请求结束时触发。
- * @property {String} requestsuccess	 当对服务的请求成功时触发。
- * @property {String} requesterror	 当对服务的请求响应错误时触发。
- * @property {String} authenticationrequired	 当对服务的请求失败并需要身份验证时，这将被触发。
+ * @property {String} requeststart 当对服务的请求开始时触发。
+ * @property {String} requestend 当对服务的请求结束时触发。
+ * @property {String} requestsuccess 当对服务的请求成功时触发。
+ * @property {String} requesterror 当对服务的请求响应错误时触发。
+ * @property {String} authenticationrequired 当对服务的请求失败并需要身份验证时，这将被触发。
  *
  *
  * @example
@@ -39,7 +39,6 @@ tileLayer.on('load', function (event) {
  * @param {Number} [options.opacity=1] 图层的不透明度。应该是介于0(完全透明)和1(完全不透明)之间的值。
  * @param {Object} [options.dynamicLayers] 用于覆盖服务定义的图层符号系统的一个或多个 JSON 对象的数组。需要哪些支持10.1+地图服务请求。
  * @param {Boolean} [options.disableCache=false] 如果启用，将时间戳附加到每个请求以确保在服务器端创建新图像。
- * @param {String} [options.popup]  popup弹窗配置
  *
  * @param {Number} [options.minZoom] 图层将显示在地图上的最远缩放级别。
  * @param {Number} [options.maxZoom] 图层将显示在地图上的最近缩放级别。
@@ -48,9 +47,14 @@ tileLayer.on('load', function (event) {
  * @param {Boolean} [options.useCors=true] 如果此服务在发出 GET 请求时应使用 CORS。
  * @param {Number} [options.zIndex] 用于图层间排序
  *
- * @param {String|Number} [options.id = uuid()] 图层id标识
+ * @param {String|Globe.getTemplateHtml_template[]|Function} [options.popup]  绑定的popup弹窗值，也可以bindPopup方法绑定，支持：'all'、数组、字符串模板
+ * @param {Map.PopupOptions} [options.popupOptions] popup弹窗时的配置参数
+ * @param {object} [highlight] 鼠标移单击后高亮对应的矢量对象的样式
+ *
+ * @param {String|Number} [options.id = createGuid()] 图层id标识
  * @param {String|Number} [options.pid = -1] 图层父级的id，一般图层管理中使用
  * @param {String} [options.name = ''] 图层名称
+ * @param {String} [options.pane = 'tilePane'] 指定图层添加到地图的哪个pane的DIV中，用于控制不同层级显示的，优先级高于zIndex。
  * @export
  * @class ArcGisDynamicLayer
  * @extends {L.esri.DynamicMapLayer}
@@ -59,15 +63,6 @@ tileLayer.on('load', function (event) {
  */
 export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
   /**
-   *  内置唯一标识ID
-   * @type {String}
-   * @readonly
-   */
-  get uuid() {
-    return this._leaflet_id;
-  }
-
-  /**
    * 是否已添加到地图
    *
    * @type {Boolean}
@@ -75,7 +70,7 @@ export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
    *
    */
   get isAdded() {
-    return this._map && this._map.hasLayer(this);
+    return this._map && this._map.hasLayer(this)
   }
 
   /**
@@ -84,10 +79,11 @@ export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
    * @type {String|Number}
    */
   get pid() {
-    return this.options.pid;
+    return this.options.pid
   }
+
   set pid(pid) {
-    this.options.pid = pid;
+    this.options.pid = pid
   }
 
   /**
@@ -96,10 +92,11 @@ export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
    * @type {String|Number}
    */
   get id() {
-    return this.options.id;
+    return this.options.id
   }
+
   set id(id) {
-    this.options.id = id;
+    this.options.id = id
   }
 
   /**
@@ -108,10 +105,11 @@ export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
    * @type {String}
    */
   get name() {
-    return this.options.name;
+    return this.options.name
   }
+
   set name(name) {
-    this.options.name = name;
+    this.options.name = name
   }
 
   /**
@@ -120,118 +118,156 @@ export class ArcGisDynamicLayer extends LEsri.DynamicMapLayer {
    * @type {Number}
    */
   get opacity() {
-    return this.getOpacity();
+    return this.options.opacity
   }
+
   set opacity(value) {
-    this.setOpacity(value);
+    this.options.opacity = value
+    this.setOpacity(value)
+  }
+
+  /**
+   * 是否可以调整透明度
+   * @type {boolean}
+   * @readonly
+   */
+  get hasOpacity() {
+    return true
+  }
+
+  /**
+   * 显示隐藏状态
+   *
+   * @type {Boolean}
+   */
+  get show() {
+    return this.options.show
+  }
+
+  set show(show) {
+    if (this.options.show === show) {
+      return
+    }
+    this.options.show = show
+
+    if (show) {
+      if (this._map) {
+        this.addTo(this._map)
+      }
+    } else {
+      const map = this._map
+      this.remove()
+      this._map = map
+    }
   }
 
   initialize(options) {
-    let popupConifg;
+    let popupConifg
     if (options.popup) {
-      popupConifg = options.popup;
-      delete options.popup;
+      popupConifg = options.popup
+      delete options.popup
     }
 
-    super.initialize(options);
+    options.pane = options.pane ?? "tilePane"
+    // options.show = options.show ?? true
 
-    L.Util.stamp(this);
-    this.options.id = mars2d.Util.defaultValue(this.options.id, this.uuid);
-    this.options.pid = mars2d.Util.defaultValue(this.options.pid, -1);
-    this.options.name = mars2d.Util.defaultValue(this.options.name, "");
+    super.initialize(options)
+
+    L.Util.stamp(this)
+    this.options.id = this.options.id ?? mars2d.Util.createGuid()
+    this.options.pid = this.options.pid ?? -1
 
     if (popupConifg) {
+      const popupOptions = this.options.popupOptions || {}
       this.bindPopup(
         (error, data, response) => {
           if (error != null && error.code > 0) {
-            mars2d.Util.msg(error.message);
-            return false;
+            mars2d.Util.msg(error.message)
+            return false
           }
-          let graphic = data.graphic;
+          const graphic = data.graphic
           if (!graphic) {
-            return false;
+            return false
           }
 
-          return mars2d.Util.getTemplateHtml({ title: this.options.name, template: popupConifg, attr: graphic.attr });
+          const attr = graphic.attr
+
+          let title = this.name
+          if (popupOptions.noTitle) {
+            title = null
+          } else if (popupOptions.title) {
+            title = popupOptions.title
+          } else if (popupOptions.titleField) {
+            title = attr[popupOptions.titleField]
+          }
+          return mars2d.Util.getTemplateHtml({ title: title, template: popupConifg, attr: attr })
         },
         { maxWidth: 600 }
-      );
+      )
     }
   }
 
   onAdd(map) {
-    super.onAdd(map);
+    super.onAdd(map)
 
-    if (!this._popup && (this.highlight || this.listens("click"))) {
-      this._map.on("click", this._getPopupData, this);
-      this._map.on("dblclick", this._resetPopupState, this);
-    }
+    setTimeout(() => {
+      if (this._map && !this._popup && (this.highlight || this.listens("click"))) {
+        this._map.on("click", this._getPopupData, this)
+        this._map.on("dblclick", this._resetPopupState, this)
+      }
+    }, 1000)
   }
 
   _renderPopup(latlng, error, results, response) {
-    let highlightStyle = this.options?.highlight;
-    let graphicsOptions = mars2d.Util.geoJsonToGraphics(results, {
+    const highlightStyle = this.options?.highlight
+    const graphicsOptions = mars2d.Util.geoJsonToGraphics(results, {
       type: highlightStyle?.type,
-      style: highlightStyle,
-    });
+      style: highlightStyle
+    })
 
-    let data = {
+    const data = {
       layer: this,
       graphic: graphicsOptions.length > 0 ? graphicsOptions[0] : null,
       graphics: graphicsOptions,
       geojson: results,
-      latlng: latlng,
-    };
+      latlng: latlng
+    }
 
     if (this._popup) {
-      super._renderPopup(latlng, error, data, response);
+      super._renderPopup(latlng, error, data, response)
     }
 
     if (graphicsOptions && highlightStyle) {
       if (!this._graphicLayer) {
         this._graphicLayer = new mars2d.layer.GraphicLayer({
           name: "高亮对象图层",
-          noLayerManage: true,
-        });
-        this._graphicLayer._mars2d_private = true;
-        this._map.addLayer(this._graphicLayer);
+          isPrivate: true
+        })
+        this._map.addLayer(this._graphicLayer)
       }
-      this._graphicLayer.clear();
-      this._graphicLayer.addGraphic(graphicsOptions);
+      this._graphicLayer.clear()
+      this._graphicLayer.addGraphic(graphicsOptions)
 
       if (this._popup) {
-        this._popup._source = this;
+        this._popup._source = this
         this.once(mars2d.EventType.popupclose, (e) => {
-          this._graphicLayer.clear();
-        });
+          this._graphicLayer.clear()
+        })
       }
     }
 
     if (this.listens("click")) {
-      this.fire(mars2d.EventType.click, data);
+      this.fire(mars2d.EventType.click, data)
     }
   }
-
-  // setZIndex(zindex){
-  //   //   //初始化顺序字段,
-  //   //   for (var i = 0; i < this._layers.length; i++) {
-  //   //     var item = this._layers[i];
-  //   //     if (item._layer && this.map.hasLayer(item._layer) && item._layer.bringToFront) {
-  //   //       item._layer.bringToFront();
-  //   //       if (item._layer.redraw) {
-  //   //         item._layer.redraw();
-  //   //       }
-  //   //     }
-  //   //   }
-  // }
 }
 
-mars2d.layer.ArcGisDynamicLayer = ArcGisDynamicLayer;
+mars2d.layer.ArcGisDynamicLayer = ArcGisDynamicLayer
 
-//注册下
-mars2d.LayerUtil.register("arcgis_dynamic", ArcGisDynamicLayer);
+// 注册下
+mars2d.LayerUtil.register("arcgis_dynamic", ArcGisDynamicLayer)
 
-//以下是leaflet的内部方法，mars2d集成直接使用的，编写注释形成API文档
+// 以下是leaflet的内部方法，mars2d集成直接使用的，编写注释形成API文档
 
 /**
  * 在所有其他叠加层下方重绘此层。
@@ -254,7 +290,7 @@ mars2d.LayerUtil.register("arcgis_dynamic", ArcGisDynamicLayer);
 /**
  * 绑定Popup弹窗配置
  * @param {Function} content Popup弹窗回调方法
- * @param {Map.PopupOptions} [options] Popup弹窗参数
+ * @param {Map.PopupOptions|Object} [options] Popup弹窗参数
  * @return {ArcGisDynamicLayer} 当前对象本身，可以链式调用
  * @example
 dynamicMapLayer.bindPopup(function(err, featureCollection, response){
@@ -402,6 +438,25 @@ mapService.query()
  * @return {ArcGisDynamicLayer} 当前对象本身，可以链式调用
  *
  * @function redraw
+ * @memberof ArcGisDynamicLayer
+ * @instance
+ */
+
+/**
+ * 将图层添加到地图
+ * @param {Map} map  地图对象
+ * @return {ArcGisDynamicLayer} 当前对象本身，可以链式调用
+ *
+ * @function addTo
+ * @memberof ArcGisDynamicLayer
+ * @instance
+ */
+
+/**
+ * 将图层从地图上移除
+ * @return {ArcGisDynamicLayer} 当前对象本身，可以链式调用
+ *
+ * @function remove
  * @memberof ArcGisDynamicLayer
  * @instance
  */

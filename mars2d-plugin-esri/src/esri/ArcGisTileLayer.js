@@ -1,6 +1,6 @@
-import L from "leaflet";
-import * as LEsri from "esri-leaflet";
-import * as mars2d from "mars2d";
+import L from "leaflet"
+import * as LEsri from "esri-leaflet"
+import * as mars2d from "mars2d"
 
 /**
  * ArcGIS Server 瓦片地图服务图层，
@@ -8,13 +8,13 @@ import * as mars2d from "mars2d";
  *
  * @param {Object} options 参数对象，包括以下：
  * @param {String} options.url ArcGIS Server服务地址,比如：'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/World/MODIS/ImageServer'
- * @param {num} [options.zoomOffsetAllowance=0.1] 如果启用correctZoomLevels，这将控制重新映射贴图级别的每个缩放级别上的差异的容错量。
+ * @param {Number} [options.zoomOffsetAllowance=0.1] 如果启用correctZoomLevels，这将控制重新映射贴图级别的每个缩放级别上的差异的容错量。
  *
  * @param {String} [options.token] 如果您在服务需要传递令牌，它将包含在对服务的所有请求中。
  * @param {String} [options.proxy]  代理服务URL
  * @param {Boolean} [options.useCors=true] 如果此服务在发出 GET 请求时应使用 CORS。
  *
- *  @param {Number} [options.opacity=1] 瓦片的不透明度。
+ * @param {Number} [options.opacity=1] 瓦片的不透明度。
  * @param {Number} [options.minZoom=0] 最小的缩放级别
  * @param {Number} [options.maxZoom=18] 最大的缩放级别
  * @param {Number} [options.maxNativeZoom] 瓦片来源可用的最大缩放倍数。如果指定，则所有缩放级别上的图块maxNativeZoom将高于将从maxNativeZoom级别加载并自动缩放。
@@ -38,10 +38,10 @@ import * as mars2d from "mars2d";
  * @param {Boolean} [options.noWrap=false] 该层是否在子午线断面。 如果为true，GridLayer只能在低缩放级别显示一次。当地图CRS 不包围时，没有任何效果。 可以结合使用bounds 以防止在CRS限制之外请求瓦片。
  * @param {ChinaCRS} [options.chinaCRS] 标识瓦片的国内坐标系（用于自动纠偏或加偏），自动将瓦片转为map对应的chinaCRS类型坐标系。
  *
- * @param {String|Number} [options.id = uuid()] 图层id标识
+ * @param {String|Number} [options.id = createGuid()] 图层id标识
  * @param {String|Number} [options.pid = -1] 图层父级的id，一般图层管理中使用
  * @param {String} [options.name = ''] 图层名称
- *
+ * @param {String} [options.pane = 'tilePane'] 指定图层添加到地图的哪个pane的DIV中，用于控制不同层级显示的，优先级高于zIndex。
  * @export
  * @class ArcGisTileLayer
  * @extends {L.esri.TiledMapLayer}
@@ -49,23 +49,12 @@ import * as mars2d from "mars2d";
  * @see [更多请参考L.esri.TiledMapLayer类API]{@link http://esri.github.io/esri-leaflet/api-reference/layers/tiled-map-layer.html}
  */
 export class ArcGisTileLayer extends LEsri.TiledMapLayer {
-  initialize (options) {
-		super.initialize(options);
+  initialize(options) {
+    super.initialize(options)
 
-    L.Util.stamp(this);
-    this.options.id = mars2d.Util.defaultValue(this.options.id, this.uuid);
-    this.options.pid = mars2d.Util.defaultValue(this.options.pid, -1);
-    this.options.name = mars2d.Util.defaultValue(this.options.name, "");
-	}
-
-  /**
-   *  内置唯一标识ID
-   *
-   * @type {String}
-   * @readonly
-   */
-  get uuid() {
-    return this._leaflet_id;
+    this.options.id = this.options.id ?? mars2d.Util.createGuid()
+    this.options.pid = this.options.pid ?? -1
+    this.options.show = this.options.show ?? true
   }
 
   /**
@@ -76,7 +65,7 @@ export class ArcGisTileLayer extends LEsri.TiledMapLayer {
    *
    */
   get isAdded() {
-    return this._map && this._map.hasLayer(this);
+    return this._map && this._map.hasLayer(this)
   }
 
   /**
@@ -85,10 +74,11 @@ export class ArcGisTileLayer extends LEsri.TiledMapLayer {
    * @type {String|Number}
    */
   get pid() {
-    return this.options.pid;
+    return this.options.pid
   }
+
   set pid(pid) {
-    this.options.pid = pid;
+    this.options.pid = pid
   }
 
   /**
@@ -97,10 +87,11 @@ export class ArcGisTileLayer extends LEsri.TiledMapLayer {
    * @type {String|Number}
    */
   get id() {
-    return this.options.id;
+    return this.options.id
   }
+
   set id(id) {
-    this.options.id = id;
+    this.options.id = id
   }
 
   /**
@@ -109,18 +100,80 @@ export class ArcGisTileLayer extends LEsri.TiledMapLayer {
    * @type {String}
    */
   get name() {
-    return this.options.name;
+    return this.options.name
   }
+
   set name(name) {
-    this.options.name = name;
+    this.options.name = name
+  }
+
+  /**
+   * 显示隐藏状态
+   *
+   * @type {Boolean}
+   */
+
+  get show() {
+    return this.options.show
+  }
+
+  set show(show) {
+    if (this.options.show === show) {
+      return
+    }
+    this.options.show = show
+
+    if (show) {
+      if (this._map) {
+        this.addTo(this._map)
+      }
+    } else {
+      const map = this._map
+      this.remove()
+      this._map = map
+    }
+  }
+
+  /**
+   * 透明度
+   *
+   * @type {Number}
+   */
+  get opacity() {
+    return this.options.opacity
+  }
+
+  set opacity(value) {
+    this.options.opacity = value
+    this.setOpacity(value)
+  }
+
+  /**
+   * 是否可以调整透明度
+   * @type {boolean}
+   * @readonly
+   */
+  get hasOpacity() {
+    return true
+  }
+
+  getTileUrl(tilePoint) {
+    const zoom = this._getZoomForUrl()
+    const data = {
+      s: this._getSubdomain(tilePoint),
+      x: tilePoint.x,
+      y: tilePoint.y,
+      z: zoom
+    }
+    return L.Util.template(this.tileUrl, L.Util.extend(data, this.options))
   }
 }
-mars2d.layer.ArcGisTileLayer = ArcGisTileLayer;
+mars2d.layer.ArcGisTileLayer = ArcGisTileLayer
 
-//注册下
-mars2d.LayerUtil.register("arcgis_tile", ArcGisTileLayer);
+// 注册下
+mars2d.LayerUtil.register("arcgis_tile", ArcGisTileLayer)
 
-//以下是leaflet的内部方法，mars2d集成直接使用的，编写注释形成API文档
+// 以下是leaflet的内部方法，mars2d集成直接使用的，编写注释形成API文档
 
 /**
  * 请求有关此要素图层的元数据。将使用error和调用回调metadata。
@@ -148,6 +201,25 @@ dynamicMapLayer.identify()
     console.log(featureCollection);
   });
  * @function identify
+ * @memberof ArcGisTileLayer
+ * @instance
+ */
+
+/**
+ * 将图层添加到地图
+ * @param {Map} map  地图对象
+ * @return {ArcGisTileLayer} 当前对象本身，可以链式调用
+ *
+ * @function addTo
+ * @memberof ArcGisTileLayer
+ * @instance
+ */
+
+/**
+ * 将图层从地图上移除
+ * @return {ArcGisTileLayer} 当前对象本身，可以链式调用
+ *
+ * @function remove
  * @memberof ArcGisTileLayer
  * @instance
  */
